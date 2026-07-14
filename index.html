@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHICK-CHICK | Select Language - Выбор языка - Chọn ngôn ngữ</title>
+    <style>
+        :root {
+            --primary-color: #d35400; /* Warm Appetizing Orange */
+            --primary-hover: #e67e22;
+            --bg-color: #fdfbf7; /* Soft cream background */
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border-color: #e6e1d3;
+            --shadow: 0 4px 15px rgba(211, 84, 0, 0.08);
+            --shadow-hover: 0 8px 25px rgba(211, 84, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: auto;
+            text-align: center;
+        }
+
+        header {
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo-container {
+            width: 90px;
+            height: 90px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 4px 15px rgba(211, 84, 0, 0.3);
+            border: 4px solid #fff;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .welcome-carousel {
+            margin: 20px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            height: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .welcome-text {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .welcome-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .language-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 20px 0;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .lang-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+            font-size: 1.15rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--shadow);
+        }
+
+        .lang-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+            background-color: #fffdf9;
+        }
+
+        .lang-card:active {
+            transform: translateY(-1px);
+        }
+
+        .lang-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .flag {
+            font-size: 1.8rem;
+        }
+
+        .arrow {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .lang-card:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        footer {
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            width: 100%;
+            max-width: 480px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">🍗</div>
+            <h1>CHICK-CHICK</h1>
+            <div class="subtitle">Korean Streetfood & Grill</div>
+        </header>
+
+        <div class="welcome-carousel">
+            <div class="welcome-text active" data-index="0">Chào mừng quý khách!</div>
+            <div class="welcome-text" data-index="1">Welcome to our restaurant!</div>
+            <div class="welcome-text" data-index="2">Добро пожаловать в кафе!</div>
+            <div class="welcome-text" data-index="3">저희 매장에 오신 것을 환영합니다!</div>
+            <div class="welcome-text" data-index="4">欢迎光临我们的餐厅！</div>
+        </div>
+
+        <main class="language-list">
+            <a href="menu.html?lang=vi" class="lang-card">
+                <div class="lang-info">
+                    <span class="flag">🇻🇳</span>
+                    <span>Tiếng Việt</span>
+                </div>
+                <span class="arrow">➔</span>
+            </a>
+            <a href="menu.html?lang=en" class="lang-card">
+                <div class="lang-info">
+                    <span class="flag">🇬🇧</span>
+                    <span>English</span>
+                </div>
+                <span class="arrow">➔</span>
+            </a>
+            <a href="menu.html?lang=ru" class="lang-card">
+                <div class="lang-info">
+                    <span class="flag">🇷🇺</span>
+                    <span>Русский</span>
+                </div>
+                <span class="arrow">➔</span>
+            </a>
+            <a href="menu.html?lang=ko" class="lang-card">
+                <div class="lang-info">
+                    <span class="flag">🇰🇷</span>
+                    <span>한국어</span>
+                </div>
+                <span class="arrow">➔</span>
+            </a>
+            <a href="menu.html?lang=zh" class="lang-card">
+                <div class="lang-info">
+                    <span class="flag">🇨🇳</span>
+                    <span>中文</span>
+                </div>
+                <span class="arrow">➔</span>
+            </a>
+        </main>
+
+        <footer>
+            <p>© CHICK-CHICK Restaurant. All rights reserved.</p>
+            <p style="margin-top: 5px; font-size: 0.75rem;">Powered by scan QR | Quét mã QR để xem thực đơn</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple script to cycle through welcome greetings
+        const greetings = document.querySelectorAll('.welcome-text');
+        let currentIndex = 0;
+
+        setInterval(() => {
+            greetings[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % greetings.length;
+            greetings[currentIndex].classList.add('active');
+        }, 3000);
+    </script>
+</body>
+</html>

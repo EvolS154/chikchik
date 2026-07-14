@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHICK-CHICK Menu</title>
+    <style>
+        :root {
+            --primary-color: #d35400; /* Warm Appetizing Orange */
+            --accent-color: #c0392b; /* Deep Red for prices */
+            --bg-color: #fdfbf7; /* Soft cream background */
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --border-color: #e6e1d3;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 25px rgba(211, 84, 0, 0.15);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding-bottom: 100px; /* Space for sticky/floating bottom cart bar */
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* Top Actions & Back Button */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            transform: translateX(-3px);
+        }
+
+        .lang-badge-container {
+            display: flex;
+            gap: 6px;
+        }
+
+        .lang-badge {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lang-badge.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Header Style */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px dashed var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 2.4rem;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-size: 1.05rem;
+            font-style: italic;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--bg-color);
+            padding: 10px 0;
+            margin-bottom: 15px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            font-size: 1rem;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            outline: none;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Categories Navigation Bar (Sticky Horizontal Scroll) */
+        .categories-nav {
+            position: sticky;
+            top: 68px; /* Below Search Bar */
+            z-index: 99;
+            background-color: var(--bg-color);
+            padding: 8px 0;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: grab;
+        }
+
+        .categories-nav::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome/Safari */
+        }
+
+        .category-nav-btn {
+            padding: 8px 16px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .category-nav-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        /* Menu Section Rules */
+        .menu-section {
+            scroll-margin-top: 140px; /* Offset for sticky nav + search */
+            margin-bottom: 35px;
+        }
+
+        .menu-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-section h2 .vi-sub {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: normal;
+            margin-top: 4px;
+        }
+
+        .section-note {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: -8px;
+            margin-bottom: 15px;
+            background-color: #fffdf9;
+            padding: 8px 12px;
+            border-left: 3px solid var(--primary-color);
+            border-radius: 4px;
+        }
+
+        /* Chicken Portion Cards Design (Optimized for Mobile) */
+        .chicken-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 580px) {
+            .chicken-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .chicken-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chicken-card-header {
+            margin-bottom: 12px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .chicken-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .chicken-card-title-vi {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        .chicken-sizes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chicken-size-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: #faf8f5;
+            transition: var(--transition);
+        }
+
+        .chicken-size-row:hover {
+            background-color: #fdf3eb;
+        }
+
+        .chicken-size-name {
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding-right: 5px;
+        }
+
+        .chicken-size-name .vi-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .chicken-size-action-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .chicken-size-price {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        /* Cart Interactive Controls */
+        .cart-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 2px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cart-control-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .cart-control-btn:active {
+            transform: scale(0.85);
+        }
+
+        .cart-control-qty {
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--text-color);
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .add-btn-style {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.82rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .add-btn-style:hover {
+            background-color: #e67e22;
+            transform: translateY(-1px);
+        }
+
+        /* General Dishes List (Other categories) */
+        .dishes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dish-item {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .dish-item:hover {
+            border-color: var(--primary-color);
+            background-color: #fffdf9;
+        }
+
+        .dish-item-info {
+            display: flex;
+            flex-direction: column;
+            padding-right: 12px;
+            flex: 1;
+        }
+
+        .dish-item-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dish-item-title-vi {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: normal;
+        }
+
+        .dish-item-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .dish-item-desc-vi {
+            font-size: 0.75rem;
+            color: #95a5a6;
+            margin-top: 1px;
+            font-style: italic;
+        }
+
+        .dish-item-action {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            min-width: 90px;
+        }
+
+        .dish-item-price {
+            font-weight: 700;
+            color: var(--accent-color);
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        /* Sticky Bottom Cart Bar Summary */
+        .sticky-cart-bar {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 30px;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            z-index: 400;
+            transform: translateY(120px);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+        }
+
+        .sticky-cart-bar.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .cart-summary-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-icon-wrapper {
+            background-color: var(--primary-color);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(211, 84, 0, 0.4);
+            position: relative;
+        }
+
+        .cart-count-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #c0392b;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 10px;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #2c3e50;
+            padding: 0 4px;
+        }
+
+        .cart-total-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-total-text .count {
+            font-size: 0.8rem;
+            color: #bdc3c7;
+        }
+
+        .cart-total-text .sum {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .view-cart-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .view-cart-btn:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        /* Cart Full-Screen Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Slides up from bottom on mobile */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        @media (min-width: 580px) {
+            .modal {
+                align-items: center;
+                padding: 20px;
+            }
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.25);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.1, 0.76, 0.55, 0.94);
+            border-top: 5px solid var(--primary-color);
+        }
+
+        @media (min-width: 580px) {
+            .modal-content {
+                border-radius: 20px;
+                max-width: 600px;
+                max-height: 80vh;
+                transform: scale(0.9);
+                border: 4px solid var(--primary-color);
+            }
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        @media (min-width: 580px) {
+            .modal.active .modal-content {
+                transform: scale(1);
+            }
+        }
+
+        /* Cart Modal Elements */
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .modal-title-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .modal-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+            font-weight: bold;
+            background-color: #fffde6;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px dashed #f1c40f;
+        }
+
+        .clear-cart-btn {
+            background: none;
+            border: 1px solid #c0392b;
+            color: #c0392b;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .clear-cart-btn:hover {
+            background-color: #c0392b;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* GIANT CONTRASTING CART ITEM FOR PARENTS */
+        .cart-item-row {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cart-item-details {
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        /* LARGE AND HIGHLIGHTED VIETNAMESE FOR PARENTS */
+        .cart-item-name-vi {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            line-height: 1.2;
+            background-color: #fffdf0;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            border-left: 4px solid #f1c40f;
+            margin-bottom: 3px;
+        }
+
+        .cart-item-name-foreign {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+        }
+
+        .cart-item-price-subtotal {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 4px;
+        }
+
+        .cart-item-action {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        .total-price-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .total-price-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .total-price-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .modal-close-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close-btn:hover {
+            background-color: #1a252f;
+        }
+
+        /* Empty state inside modal */
+        .cart-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cart-empty-state span {
+            font-size: 3rem;
+        }
+
+        /* Floating Back-to-Top Button */
+        .floating-actions {
+            position: fixed;
+            bottom: 84px; /* Shifted up to avoid overlapping sticky cart bar */
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 390;
+            transition: bottom 0.3s;
+        }
+
+        .floating-actions.with-bar {
+            bottom: 95px; /* Adjust when sticky bar is active */
+        }
+
+        .floating-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-3px);
+            background-color: #e67e22;
+        }
+
+        .dish-item.stopped {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(1);
+            position: relative;
+        }
+        .chicken-card.stopped {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(1);
+            position: relative;
+        }
+        .stopped-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 2;
+            text-align: center;
+        }
+        .empty-search {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Top Nav Action Bar -->
+    <div class="top-bar">
+        <a href="index.html" class="back-btn" id="ui-back-btn">← Chọn ngôn ngữ</a>
+        
+        <div class="lang-badge-container">
+            <a href="?lang=vi" class="lang-badge" id="badge-vi">🇻🇳 VI</a>
+            <a href="?lang=en" class="lang-badge" id="badge-en">🇬🇧 EN</a>
+            <a href="?lang=ru" class="lang-badge" id="badge-ru">🇷🇺 RU</a>
+            <a href="?lang=ko" class="lang-badge" id="badge-ko">🇰🇷 KO</a>
+            <a href="?lang=zh" class="lang-badge" id="badge-zh">🇨🇳 ZH</a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <h1 onclick="window.location.reload();" style="cursor: pointer;">CHICK-CHICK</h1>
+        <p id="ui-subtitle">Корейский стритфуд & Гриль | Đồ ăn đường phố Hàn Quốc & Đồ nướng</p>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="search-box" placeholder="Поиск блюд / Tìm kiếm...">
+        </div>
+    </div>
+
+    <!-- Sticky Navigation Categories -->
+    <nav class="categories-nav" id="categories-nav-bar">
+        <!-- Dynamically populated buttons -->
+    </nav>
+
+    <!-- Empty Search State -->
+    <div class="empty-search" id="empty-search-msg">
+        No matches found / Không tìm thấy món ăn phù hợp
+    </div>
+
+    <!-- Menu Sections Container -->
+    <main class="menu-content" id="menu-sections-container">
+        <!-- Sections and items dynamically loaded -->
+    </main>
+
+    <!-- Footer -->
+    <footer id="ui-footer">
+        <p>© CHICK-CHICK Restaurant. All prices are in VND / Tất cả giá được tính bằng VND.</p>
+    </footer>
+</div>
+
+<!-- Floating Back to Top Button -->
+<div class="floating-actions" id="floating-buttons-box">
+    <button class="floating-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" aria-label="Back to Top">▲</button>
+</div>
+
+<!-- Floating Bottom Cart Summary Bar -->
+<div class="sticky-cart-bar" id="sticky-cart-summary">
+    <div class="cart-summary-left">
+        <div class="cart-icon-wrapper">
+            🛒
+            <span class="cart-count-badge" id="cart-badge-count">0</span>
+        </div>
+        <div class="cart-total-text">
+            <span class="count" id="cart-item-count-label">0 món / 0 items</span>
+            <span class="sum" id="cart-total-sum">0 VND</span>
+        </div>
+    </div>
+    <button class="view-cart-btn" id="ui-view-cart-btn" onclick="openCartModal();">Giỏ hàng ➔</button>
+</div>
+
+<!-- Cart Modal (Optimized with MASSIVE font sizes for parents!) -->
+<div class="modal" id="cart-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title-wrapper">
+                <span class="modal-title" id="ui-modal-title">Ваша корзина</span>
+                <span class="modal-subtitle" id="ui-modal-subtitle">Покажите этот экран сотрудникам для заказа</span>
+            </div>
+            <button class="clear-cart-btn" id="ui-clear-cart-btn" onclick="clearCart();">Очистить</button>
+        </div>
+        
+        <div class="modal-body" id="cart-items-list-container">
+            <!-- Items loaded dynamically -->
+        </div>
+        
+        <div class="modal-footer">
+            <div class="total-price-box">
+                <span class="total-price-label" id="ui-total-label">Итого:</span>
+                <span class="total-price-value" id="cart-modal-total-sum">0 VND</span>
+            </div>
+            <button class="modal-close-btn" id="modal-close-btn" onclick="closeCartModal();">Đóng / Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Load Javascript base menu data -->
+<script src="menu-data.js"></script>
+
+<script>
+    // 1. Get Selected Language
+    const urlParams = new URLSearchParams(window.location.search);
+    let lang = urlParams.get('lang') || 'en';
+    
+    // Fallback if language is not supported
+    if (!menuData.languages[lang]) {
+        lang = 'en';
+    }
+
+    // Highlighting active language badge
+    document.querySelectorAll('.lang-badge').forEach(badge => {
+        badge.classList.remove('active');
+        // Keep the language parameter correct on badge hrefs
+        const bLang = badge.id.split('-')[1];
+        badge.href = `?lang=${bLang}`;
+    });
+    const currentBadge = document.getElementById(`badge-${lang}`);
+    if (currentBadge) currentBadge.classList.add('active');
+
+    // 2. Setup Page UI Translations based on Language
+    document.title = `Menu | CHICK-CHICK | ${menuData.languages[lang].name}`;
+    document.getElementById('ui-back-btn').innerText = menuData.ui.backBtn[lang];
+    document.getElementById('ui-back-btn').href = 'index.html?lang=' + lang;
+    document.getElementById('ui-subtitle').innerText = `${menuData.ui.subtitle[lang]} | ${menuData.ui.subtitle['vi']}`;
+    document.getElementById('search-box').placeholder = `${menuData.ui.searchPlaceholder[lang]} / ${menuData.ui.searchPlaceholder['vi']}`;
+    
+    // Modal & Cart UI elements translations
+    document.getElementById('ui-modal-title').innerText = menuData.ui.yourCart[lang];
+    document.getElementById('ui-modal-subtitle').innerText = menuData.ui.showParentsSubtitle[lang];
+    document.getElementById('ui-clear-cart-btn').innerText = menuData.ui.clearCart[lang];
+    document.getElementById('ui-total-label').innerText = menuData.ui.cartTotal[lang] + ' / ' + menuData.ui.cartTotal['vi'] + ':';
+    document.getElementById('modal-close-btn').innerText = `${menuData.ui.closeBtn['vi']} / ${menuData.ui.closeBtn[lang]}`;
+    document.getElementById('ui-view-cart-btn').innerText = menuData.ui.yourCart[lang] + ' ➔';
+
+    // 3. Cart State Management (with LocalStorage synchronisation!)
+    let cart = [];
+    try {
+        cart = JSON.parse(localStorage.getItem('chick_cart')) || [];
+    } catch(e) {
+        cart = [];
+    }
+
+    // Build a helper mapping of all products in O(1) for rapid rendering & operations
+    const itemsMap = {};
+    menuData.categories.forEach(cat => {
+        if (cat.isTable) {
+            cat.items.forEach(item => {
+                Object.keys(item.prices).forEach(sizeKey => {
+                    const id = `${item.id}_${sizeKey}`;
+                    itemsMap[id] = {
+                        id: id,
+                        viName: `${item.name['vi']} (${menuData.ui.chickenSizes[sizeKey]['vi']})`,
+                        foreignName: `${item.name[lang]} (${menuData.ui.chickenSizes[sizeKey][lang]})`,
+                        price: item.prices[sizeKey],
+                        category: cat.id
+                    };
+                });
+            });
+        } else {
+            cat.items.forEach(item => {
+                itemsMap[item.id] = {
+                    id: item.id,
+                    viName: item.name['vi'],
+                    foreignName: item.name[lang],
+                    price: item.price,
+                    category: cat.id,
+                    subtextVi: item.subtext ? item.subtext['vi'] : '',
+                    subtextForeign: item.subtext ? item.subtext[lang] : ''
+                };
+            });
+        }
+    });
+
+    // 4. Cart Logic functions
+    function saveCart() {
+        localStorage.setItem('chick_cart', JSON.stringify(cart));
+        updateCartUI();
+    }
+
+    function addToCart(id) {
+        const product = itemsMap[id];
+        if (!product) return;
+
+        const existingItem = cart.find(item => item.id === id);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({
+                id: id,
+                quantity: 1
+            });
+        }
+        
+        // Haptic tap feedback if available
+        if (navigator.vibrate) {
+            navigator.vibrate(40);
+        }
+
+        saveCart();
+        renderMenuControls(); // Refresh +/- states in the main list
+    }
+
+    function removeFromCart(id) {
+        const existingItemIndex = cart.findIndex(item => item.id === id);
+        if (existingItemIndex > -1) {
+            const item = cart[existingItemIndex];
+            if (item.quantity > 1) {
+                item.quantity--;
+            } else {
+                cart.splice(existingItemIndex, 1);
+            }
+        }
+        
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
+
+        saveCart();
+        renderMenuControls(); // Refresh +/- states in the main list
+    }
+
+    function clearCart() {
+        cart = [];
+        saveCart();
+        renderMenuControls();
+        closeCartModal();
+    }
+
+    function getCartItemQty(id) {
+        const item = cart.find(item => item.id === id);
+        return item ? item.quantity : 0;
+    }
+
+    // Calculate total sums and update sticky bottom bar and modal summary
+    function updateCartUI() {
+        let totalItemsCount = 0;
+        let totalSum = 0;
+
+        cart.forEach(item => {
+            const product = itemsMap[item.id];
+            if(!product) return;
+            totalItemsCount += item.quantity;
+            // Parse price string like "180.000" to number
+            const numericPrice = parseFloat(product.price.replace(/\./g, '')) * 1000;
+            totalSum += numericPrice * item.quantity;
+        });
+
+        const formattedSum = formatVND(totalSum);
+
+        // Sticky Summary bar update
+        const stickyBar = document.getElementById('sticky-cart-summary');
+        const floatBtns = document.getElementById('floating-buttons-box');
+        
+        if (totalItemsCount > 0) {
+            stickyBar.classList.add('active');
+            floatBtns.classList.add('with-bar');
+            
+            document.getElementById('cart-badge-count').innerText = totalItemsCount;
+            
+            // Multilingual items text helper
+            let itemsLabel = `${totalItemsCount} món`;
+            if (lang === 'en') itemsLabel = `${totalItemsCount} items`;
+            else if (lang === 'ru') itemsLabel = `${totalItemsCount} блюд(а)`;
+            else if (lang === 'ko') itemsLabel = `${totalItemsCount}개 상품`;
+            else if (lang === 'zh') itemsLabel = `${totalItemsCount}份菜品`;
+
+            document.getElementById('cart-item-count-label').innerText = itemsLabel;
+            document.getElementById('cart-total-sum').innerText = formattedSum;
+        } else {
+            stickyBar.classList.remove('active');
+            floatBtns.classList.remove('with-bar');
+        }
+
+        // Modal sum updates
+        document.getElementById('cart-modal-total-sum').innerText = formattedSum;
+    }
+
+    function formatVND(num) {
+        // Formats number to 180.000 VND
+        return num.toLocaleString('vi-VN') + ' VND';
+    }
+
+    // 5. Render Navigation Categories
+    const navBar = document.getElementById('categories-nav-bar');
+    menuData.categories.forEach((cat, index) => {
+        const btn = document.createElement('button');
+        btn.className = `category-nav-btn ${index === 0 ? 'active' : ''}`;
+        btn.innerHTML = `<span>${cat.icon}</span> ${cat.title[lang]}`;
+        btn.onclick = () => {
+            document.querySelectorAll('.category-nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const section = document.getElementById(`sec-${cat.id}`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+        navBar.appendChild(btn);
+    });
+
+    // 6. Render Menu Content List
+    const sectionsContainer = document.getElementById('menu-sections-container');
+    
+    menuData.categories.forEach(cat => {
+        const section = document.createElement('section');
+        section.className = 'menu-section';
+        section.id = `sec-${cat.id}`;
+        
+        // Header HTML
+        const headerHtml = `
+            <h2>
+                <span>${cat.icon} ${cat.title[lang]}</span>
+                ${lang !== 'vi' ? `<span class="vi-sub">${cat.title['vi']}</span>` : ''}
+            </h2>
+        `;
+        section.innerHTML += headerHtml;
+
+        // Custom notes
+        if (cat.id === 'chicken') {
+            section.innerHTML += `<p class="section-note"><b>🍗 ${menuData.ui.chickenNote[lang]}</b><br>${lang !== 'vi' ? `<small>${menuData.ui.chickenNote['vi']}</small>` : ''}</p>`;
+        } else if (cat.hasCheeseNote) {
+            section.innerHTML += `<p class="section-note"><b>🧀 ${menuData.ui.cheeseNote[lang]}</b><br>${lang !== 'vi' ? `<small>${menuData.ui.cheeseNote['vi']}</small>` : ''}</p>`;
+        }
+
+                // Render Chicken Items as Grid Cards
+        if (cat.isTable) {
+            const grid = document.createElement('div');
+            grid.className = 'chicken-grid';
+            
+            cat.items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `chicken-card ${item.isStopped ? 'stopped' : ''}`;
+                card.id = `card-${item.id}`;
+                
+                let sizesHtml = '';
+                Object.keys(item.prices).forEach(sizeKey => {
+                    const priceVal = item.prices[sizeKey];
+                    const sizeInfo = menuData.ui.chickenSizes[sizeKey];
+                    const fullId = `${item.id}_${sizeKey}`;
+                    
+                    sizesHtml += `
+                        <div class="chicken-size-row">
+                            <div class="chicken-size-name">
+                                <strong>${sizeInfo[lang]}</strong>
+                                ${lang !== 'vi' ? `<span class="vi-label">${sizeInfo['vi']}</span>` : ''}
+                            </div>
+                            <div class="chicken-size-action-box">
+                                <span class="chicken-size-price">${priceVal} VND</span>
+                                <div class="item-interactive-control" id="ctrl-${fullId}">
+                                    <!-- Dynamic Add/Remove Buttons loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    ${item.isStopped ? `<div class="stopped-label">${menuData.ui.outOfStock[lang]}</div>` : ''}
+                    <div class="chicken-card-header">
+                        ${item.image ? `<img src="${item.image}" alt="${item.name[lang]}" style="width:100%; border-radius:8px; margin-bottom:8px;">` : ''}
+                        <div class="chicken-card-title">${item.name[lang]}</div>
+                        ${lang !== 'vi' ? `<div class="chicken-card-title-vi">${item.name['vi']}</div>` : ''}
+                    </div>
+                    <div class="chicken-sizes-list">
+                        ${sizesHtml}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            section.appendChild(grid);
+        } else {
+            // General Dishes List
+            const list = document.createElement('div');
+            list.className = 'dishes-list';
+            
+            cat.items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `dish-item ${item.isStopped ? 'stopped' : ''}`;
+                itemDiv.id = `item-${item.id}`;
+                
+                const hasSubtext = item.subtext && item.subtext[lang];
+                
+                itemDiv.innerHTML = `
+                    ${item.isStopped ? `<div class="stopped-label">${menuData.ui.outOfStock[lang]}</div>` : ''}
+                    ${item.image ? `<img src="${item.image}" alt="${item.name[lang]}" style="width:80px; height:80px; object-fit:cover; border-radius:12px; margin-right:12px;">` : ''}
+                    <div class="dish-item-info">
+                        <span class="dish-item-title">${item.name[lang]}</span>
+                        ${lang !== 'vi' ? `<span class="dish-item-title-vi">${item.name['vi']}</span>` : ''}
+                        
+                        ${hasSubtext ? `<span class="dish-item-desc">${item.subtext[lang]}</span>` : ''}
+                        ${hasSubtext && lang !== 'vi' ? `<span class="dish-item-desc-vi">${item.subtext['vi']}</span>` : ''}
+                    </div>
+                    <div class="dish-item-action">
+                        <span class="dish-item-price">${item.price} VND</span>
+                        <div class="item-interactive-control" id="ctrl-${item.id}">
+                            <!-- Dynamic Add/Remove Buttons loaded here -->
+                        </div>
+                    </div>
+                `;
+                list.appendChild(itemDiv);
+            });
+            section.appendChild(list);
+        }
+
+        // Add additional sauces list to chicken section
+        if (cat.id === 'chicken') {
+            const sauceNote = document.createElement('p');
+            sauceNote.className = 'section-note';
+            sauceNote.style.marginTop = '20px';
+            sauceNote.innerHTML = `<b>🥣 ${menuData.ui.additionalSauces[lang]}</b><br>${lang !== 'vi' ? `<small>${menuData.ui.additionalSauces['vi']}</small>` : ''}`;
+            section.appendChild(sauceNote);
+        }
+
+        sectionsContainer.appendChild(section);
+    });
+
+    // 7. Interactive Controls Rendering & Dynamic Syncing
+    function renderMenuControls() {
+        Object.keys(itemsMap).forEach(id => {
+            const container = document.getElementById(`ctrl-${id}`);
+            if (!container) return;
+
+            const qty = getCartItemQty(id);
+            const addText = menuData.ui.addToCart[lang];
+
+            if (qty > 0) {
+                container.innerHTML = `
+                    <div class="cart-control">
+                        <button class="cart-control-btn dec-btn" onclick="removeFromCart('${id}')">−</button>
+                        <span class="cart-control-qty">${qty}</span>
+                        <button class="cart-control-btn inc-btn" onclick="addToCart('${id}')">+</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button class="add-btn-style" onclick="addToCart('${id}')">+ ${addText}</button>
+                `;
+            }
+        });
+    }
+
+    // 8. View / Render Cart Modal
+    const modal = document.getElementById('cart-modal');
+    const cartItemsListContainer = document.getElementById('cart-items-list-container');
+
+    function openCartModal() {
+        renderCartItemsList();
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Stop background scrolling
+    }
+
+    function closeCartModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal when tapping outside content card
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            closeCartModal();
+        }
+    };
+
+    function renderCartItemsList() {
+        cartItemsListContainer.innerHTML = '';
+
+        if (cart.length === 0) {
+            cartItemsListContainer.innerHTML = `
+                <div class="cart-empty-state">
+                    <span>🛒</span>
+                    <p><b>${menuData.ui.cartEmpty[lang]}</b></p>
+                    ${lang !== 'vi' ? `<p><small>${menuData.ui.cartEmpty['vi']}</small></p>` : ''}
+                </div>
+            `;
+            return;
+        }
+
+        cart.forEach(item => {
+            const product = itemsMap[item.id];
+            if(!product) return;
+            
+            const row = document.createElement('div');
+            row.className = 'cart-item-row';
+            
+            // Render beautiful item block with massive Vietnamese title for parents
+            row.innerHTML = `
+                <div class="cart-item-details">
+                    <div class="cart-item-name-vi">${product.viName.toUpperCase()}</div>
+                    ${lang !== 'vi' ? `<div class="cart-item-name-foreign">${product.foreignName}</div>` : ''}
+                    <div class="cart-item-price-subtotal">${product.price} VND</div>
+                </div>
+                <div class="cart-item-action">
+                    <div class="cart-control">
+                        <button class="cart-control-btn" onclick="removeFromCartAndReload('${item.id}')">−</button>
+                        <span class="cart-control-qty">${item.quantity}</span>
+                        <button class="cart-control-btn" onclick="addToCartAndReload('${item.id}')">+</button>
+                    </div>
+                </div>
+            `;
+            cartItemsListContainer.appendChild(row);
+        });
+    }
+
+    // Helpers to operate inside the cart modal list and refresh the modal list instantly
+    function addToCartAndReload(id) {
+        addToCart(id);
+        renderCartItemsList();
+    }
+
+    function removeFromCartAndReload(id) {
+        removeFromCart(id);
+        renderCartItemsList();
+    }
+
+    // 9. Real-time Multilingual Search Filtering
+    const searchBox = document.getElementById('search-box');
+    const emptySearchMsg = document.getElementById('empty-search-msg');
+
+    searchBox.oninput = () => {
+        const query = searchBox.value.toLowerCase().trim();
+        let totalVisible = 0;
+
+        menuData.categories.forEach(cat => {
+            const section = document.getElementById(`sec-${cat.id}`);
+            let sectionVisibleItems = 0;
+
+            if (cat.isTable) {
+                // Fried chicken grid card filtering
+                const cards = section.querySelectorAll('.chicken-card');
+                cat.items.forEach((item, itemIdx) => {
+                    const card = cards[itemIdx];
+                    const textMatches = 
+                        item.name[lang].toLowerCase().includes(query) || 
+                        item.name['vi'].toLowerCase().includes(query) ||
+                        cat.title[lang].toLowerCase().includes(query) ||
+                        cat.title['vi'].toLowerCase().includes(query);
+
+                    if (textMatches) {
+                        card.style.display = 'flex';
+                        sectionVisibleItems++;
+                        totalVisible++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            } else {
+                // General dishes list filtering
+                const items = section.querySelectorAll('.dish-item');
+                cat.items.forEach((item, itemIdx) => {
+                    const itemDiv = items[itemIdx];
+                    
+                    const subtextMatches = item.subtext ? (
+                        (item.subtext[lang] && item.subtext[lang].toLowerCase().includes(query)) ||
+                        (item.subtext['vi'] && item.subtext['vi'].toLowerCase().includes(query))
+                    ) : false;
+
+                    const textMatches = 
+                        item.name[lang].toLowerCase().includes(query) || 
+                        item.name['vi'].toLowerCase().includes(query) ||
+                        cat.title[lang].toLowerCase().includes(query) ||
+                        cat.title['vi'].toLowerCase().includes(query) ||
+                        subtextMatches;
+
+                    if (textMatches) {
+                        itemDiv.style.display = 'flex';
+                        sectionVisibleItems++;
+                        totalVisible++;
+                    } else {
+                        itemDiv.style.display = 'none';
+                    }
+                });
+            }
+
+            // Show or hide whole section
+            if (sectionVisibleItems > 0 || query === '') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        });
+
+        // Toggle Empty Message
+        if (totalVisible === 0 && query !== '') {
+            emptySearchMsg.style.display = 'block';
+        } else {
+            emptySearchMsg.style.display = 'none';
+        }
+    };
+
+    // 10. Active Section Tracker for Sticky Categories Nav
+    window.addEventListener('scroll', () => {
+        let currentSecId = '';
+        const scrollPos = window.scrollY + 160;
+
+        menuData.categories.forEach(cat => {
+            const section = document.getElementById(`sec-${cat.id}`);
+            if (section && section.style.display !== 'none') {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                
+                if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                    currentSecId = cat.id;
+                }
+            }
+        });
+
+        if (currentSecId) {
+            document.querySelectorAll('.category-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.onclick.toString().includes(`sec-${currentSecId}`)) {
+                    btn.classList.add('active');
+                    
+                    const navBar = document.getElementById('categories-nav-bar');
+                    const activeBtn = btn;
+                    const navRect = navBar.getBoundingClientRect();
+                    const btnRect = activeBtn.getBoundingClientRect();
+                    
+                    if (btnRect.left < navRect.left || btnRect.right > navRect.right) {
+                        navBar.scrollLeft += (btnRect.left - navRect.left) - (navRect.width / 2) + (btnRect.width / 2);
+                    }
+                }
+            });
+        }
+    });
+
+    // 11. Desktop Drag-to-Scroll for Category Nav
+    const navBarDrag = document.getElementById('categories-nav-bar');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    navBarDrag.addEventListener('mousedown', (e) => {
+        isDown = true;
+        navBarDrag.style.cursor = 'grabbing';
+        startX = e.pageX - navBarDrag.offsetLeft;
+        scrollLeft = navBarDrag.scrollLeft;
+    });
+    navBarDrag.addEventListener('mouseleave', () => {
+        isDown = false;
+        navBarDrag.style.cursor = 'grab';
+    });
+    navBarDrag.addEventListener('mouseup', () => {
+        isDown = false;
+        navBarDrag.style.cursor = 'grab';
+    });
+    navBarDrag.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - navBarDrag.offsetLeft;
+        const walk = (x - startX) * 2;
+        navBarDrag.scrollLeft = scrollLeft - walk;
+    });
+
+    // Initial runs
+    renderMenuControls();
+    updateCartUI();
+</script>
+
+</body>
+</html>
